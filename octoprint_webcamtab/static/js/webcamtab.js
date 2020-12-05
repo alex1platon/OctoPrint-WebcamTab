@@ -116,6 +116,7 @@ $(function() {
             } else if (OctoVersion == "1.3") {
                 self.control._enableWebcam = self._enableWebcam_1_3
             } else {
+                console.log("Plugin: Webcam Tab G: Unsupported OctoPrint version " + OctoVersion
                 return // fail silently
             }
     
