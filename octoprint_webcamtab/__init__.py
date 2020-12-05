@@ -1,7 +1,7 @@
 # coding=utf-8
 from __future__ import absolute_import
 
-__author__ = "authors: Sven Lohrmann + Bryan J. Rentoul <gruvin@gmail.com>"
+__authors__ = "authors: Sven Lohrmann + Bryan J. Rentoul <gruvin@gmail.com>"
 __license__ = "GNU Affero General Public License http://www.gnu.org/licenses/agpl.html"
 __copyright__ = "Copyright (C) 2017 Sven Lohrmann - Released under terms of the AGPLv3 License"
 
