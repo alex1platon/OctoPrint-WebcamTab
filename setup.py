@@ -3,13 +3,13 @@ from setuptools import setup
 
 ########################################################################################################################
 
-plugin_identifier = "webcamtab"
+plugin_identifier = "webcamtab_g"
 plugin_package = "octoprint_webcamtab"
-plugin_name = "OctoPrint-WebcamTab"
+plugin_name = "OctoPrint-WebcamTab_G"
 plugin_version = "0.1.5"
 plugin_description = """Show webcam stream in separate tab"""
 plugin_author = "Sven Lohrmann + Bryan Rentoul"
-plugin_author_email = "malnvenshorn@gmail.com"
+plugin_author_email = "gruvin@gmail.com"
 plugin_url = "https://github.com/gruvin/OctoPrint-WebcamTab"
 plugin_license = "AGPLv3"
 plugin_requires = []
