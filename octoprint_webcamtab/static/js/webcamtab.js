@@ -1,7 +1,7 @@
 /*
  * View model for OctoPrint-WebcamTab
  *
- * Author: Sven Lohrmann
+ * Author: Bryan J. Rentoul (originally Sven Lohrmann)
  * License: AGPLv3
  */
 $(function() {
@@ -104,24 +104,25 @@ $(function() {
 
         // move DOM webncam elements from #control to #tab_plugin_webcamtab ...
         self.onAllBound = function(allViewModels) {
-            var tab = $("#tab_plugin_webcamtab");
+            var $tab = $("#tab_plugin_webcamtab");
+            var $webcam = null
 
             const OctoVersion = $("#footer_version span.version").text().match(/^\d\.\d/)[0]
             if (OctoVersion == "1.5") {
                 self.control._enableWebcam = self._enableWebcam_1_5
-                var webcam_hls = $("#webcam_hls_container");
-                if (webcam_hls) tab.append(webcam_hls.detach())
+                $webcam = $("#control > #webcam_container, #control > #webcam_hls_container");
             } else if (OctoVersion == "1.4") {
                 self.control._enableWebcam = self._enableWebcam_1_4
+                $webcam = $("#control > #webcam_container");
             } else if (OctoVersion == "1.3") {
                 self.control._enableWebcam = self._enableWebcam_1_3
+                $webcam = $("#control > #webcam_container");
             } else {
-                console.log("Plugin: Webcam Tab G: Unsupported OctoPrint version " + OctoVersion)
+                console.log("plugin_Webcam Tab: Unsupported OctoPrint version " + OctoVersion)
                 return // fail silently
             }
     
-            // copy control.onTabChange() method code from Octoprint v1.5.0
-            // and override it, replacing #control with #tab_plugin_webcamtab.
+            // onTabChange is identical in control.js v1.3.5, 1.4 & 1.5
             self.control.onTabChange = function (current, previous) {
                 if (current == "#tab_plugin_webcamtab") {
                     self.control._enableWebcam();     // inserted '.control'
@@ -130,13 +131,12 @@ $(function() {
                 }
             };
 
-            var webcam = $("#webcam_container")
             if (webcam) {
-                var hint = webcam.next();
-                tab.append(webcam.detach());
+                var $hint = $webcam.next(); // same enough in control.js v1.3.5, 1.4 & 1.5
+                $tab.append($webcam.detach());
                 const checkString = "visible: keycontrolPossible"
                 if (hint && hint.attr("data-bind").substr(0, checkString.length) === checkString) {
-                    tab.append(hint.detach());
+                    $tab.append($hint.detach());
                 }
             }
         };

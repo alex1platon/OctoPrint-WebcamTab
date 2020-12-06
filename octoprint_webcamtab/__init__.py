@@ -1,15 +1,13 @@
 # coding=utf-8
 from __future__ import absolute_import
 
-__authors__ = "authors: Sven Lohrmann + Bryan J. Rentoul <gruvin@gmail.com>"
+__author__ = "author: Bryan J. Rentoul <gruvin@gmail.com> (originally Sven Lohrmann)"
 __license__ = "GNU Affero General Public License http://www.gnu.org/licenses/agpl.html"
 __copyright__ = "Copyright (C) 2017 Sven Lohrmann - Released under terms of the AGPLv3 License"
 
 import octoprint.plugin
 
-
-class WebcamTabPlugin(octoprint.plugin.AssetPlugin,
-                      octoprint.plugin.TemplatePlugin):
+class WebcamTabPlugin(octoprint.plugin.AssetPlugin, octoprint.plugin.TemplatePlugin):
 
     # AssetPlugin mixin
 
@@ -30,7 +28,7 @@ class WebcamTabPlugin(octoprint.plugin.AssetPlugin,
     def get_update_information(self):
         return dict(
             webcamtab=dict(
-                displayName="Webcam Tab G",
+                displayName="WebcamTab",
                 displayVersion=self._plugin_version,
 
                 # version check: github repository
@@ -45,7 +43,7 @@ class WebcamTabPlugin(octoprint.plugin.AssetPlugin,
         )
 
 
-__plugin_name__ = "Webcam Tab G"
+__plugin_name__ = "WebcamTab"
 __plugin_pythoncompat__ = ">=2.7,<4"
 
 def __plugin_load__():
