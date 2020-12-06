@@ -6,7 +6,7 @@ from setuptools import setup
 plugin_identifier = "webcamtab"
 plugin_package = "octoprint_webcamtab"
 plugin_name = "OctoPrint-WebcamTab"
-plugin_version = "0.2.0rc2"
+plugin_version = "0.2.0"
 plugin_description = """Show webcam stream in separate tab"""
 plugin_author = "Bryan J. Rentoul (originally Sven Lohrmann)"
 plugin_author_email = "gruvin@gmail.com"
