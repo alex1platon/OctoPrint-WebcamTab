@@ -131,11 +131,11 @@ $(function() {
                 }
             };
 
-            if (webcam) {
+            if ($webcam) {
                 var $hint = $webcam.next(); // same enough in control.js v1.3.5, 1.4 & 1.5
                 $tab.append($webcam.detach());
                 const checkString = "visible: keycontrolPossible"
-                if (hint && hint.attr("data-bind").substr(0, checkString.length) === checkString) {
+                if ($hint && $hint.attr("data-bind").substr(0, checkString.length) === checkString) {
                     $tab.append($hint.detach());
                 }
             }
