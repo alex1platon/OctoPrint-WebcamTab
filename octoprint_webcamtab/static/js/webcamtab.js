@@ -10,135 +10,148 @@ $(function() {
 
         self.control = dependencies[0]; // reference to instance of default 'control' view model
         
-        // TODO: For the following overrides, consider checking Octoprint version and 
-        //       using code from v1.3x, v1.4 or v1.5 accordingly. For now, we depend on v1.5.0.
-
-        // copy control._enableWebcam() method code from Octoprint v1.5.0
-        // and override it, replacing #control with #tab_plugin_webcamtab.
-
-        self._enableWebcam_1_5 = function () {
-            // This is the offending line that make keeping up with Octoprint versions 'hackish'
-            if (
-                OctoPrint.coreui.selectedTab != "#tab_plugin_webcamtab" ||
-                !OctoPrint.coreui.browserTabVisible
-            ) {
-                return;
-            }
-
-            if (self.control.webcamDisableTimeout != undefined) {
-                clearTimeout(self.control.webcamDisableTimeout);  // inserted '.control'
-            }
-
-            // Determine stream type and switch to corresponding webcam.
-            var streamType = determineWebcamStreamType(self.control.settings.webcam_streamUrl());
-            if (streamType == "mjpg") {
-                self.control._switchToMjpgWebcam()  // inserted '.control'
-            } else if (streamType == "hls") {
-                self.control._switchToHlsWebcam()   // inserted '.control'
-            } else {
-                throw "Unknown stream type " + streamType;
-            }
-        }
-
-        self._enableWebcam_1_4 = function() {
-            if (OctoPrint.coreui.selectedTab != "#tab_plugin_webcamtab" || !OctoPrint.coreui.browserTabVisible) {
-                return;
-            }
-
-            if (self.control.webcamDisableTimeout != undefined) {
-                clearTimeout(self.control.webcamDisableTimeout);
-            }
-            var webcamImage = $("#webcam_image");
-            var currentSrc = webcamImage.attr("src");
-
-            // safari bug doesn't release the mjpeg stream, so we just set it up the once
-            if (OctoPrint.coreui.browser.safari && currentSrc != undefined) {
-                return;
-            }
-
-            var newSrc = self.settings.webcam_streamUrl();
-            if (currentSrc != newSrc) {
-                if (newSrc.lastIndexOf("?") > -1) {
-                    newSrc += "&";
-                } else {
-                    newSrc += "?";
+        self.methodOverrides = {
+            _enableWebcam_v1_5: function() {
+                if (
+                    OctoPrint.coreui.selectedTab != "#tab_plugin_webcamtab" ||
+                    !OctoPrint.coreui.browserTabVisible
+                ) {
+                    return;
                 }
-                newSrc += new Date().getTime();
 
-                self.control.webcamLoaded(false);
-                self.control.webcamError(false);
-                webcamImage.attr("src", newSrc);
-            }
-        }
-
-        self._enableWebcam_1_3 = function() {
-            if (OctoPrint.coreui.selectedTab != "#tab_plugin_webcamtab" || !OctoPrint.coreui.browserTabVisible) {
-                return;
-            }
-
-            if (self.control.webcamDisableTimeout != undefined) {
-                clearTimeout(self.control.webcamDisableTimeout);
-            }
-            var webcamImage = $("#webcam_image");
-            var currentSrc = webcamImage.attr("src");
-
-            // safari bug doesn't release the mjpeg stream, so we just set it up the once
-            if (OctoPrint.coreui.browser.safari && currentSrc != undefined) {
-                return;
-            }
-
-            var newSrc = self.control.settings.webcam_streamUrl();
-            if (currentSrc != newSrc) {
-                if (newSrc.lastIndexOf("?") > -1) {
-                    newSrc += "&";
-                } else {
-                    newSrc += "?";
+                if (self.control.webcamDisableTimeout != undefined) {
+                    clearTimeout(self.control.webcamDisableTimeout);  // inserted '.control'
                 }
-                newSrc += new Date().getTime();
 
-                self.control.webcamLoaded(false);
-                self.control.webcamError(false);
-                webcamImage.attr("src", newSrc);
-            }
-        }
+                // Determine stream type and switch to corresponding webcam.
+                var streamType = determineWebcamStreamType(self.control.settings.webcam_streamUrl());
+                if (streamType == "mjpg") {
+                    self.control._switchToMjpgWebcam()  // inserted '.control'
+                } else if (streamType == "hls") {
+                    self.control._switchToHlsWebcam()   // inserted '.control'
+                } else {
+                    throw "Unknown stream type " + streamType;
+                }
+            },
 
-        // move DOM webncam elements from #control to #tab_plugin_webcamtab ...
-        self.onAllBound = function(allViewModels) {
-            var $tab = $("#tab_plugin_webcamtab");
-            var $webcam = null
+            _enableWebcam_v1_4: function() {
+                if (OctoPrint.coreui.selectedTab != "#tab_plugin_webcamtab" || !OctoPrint.coreui.browserTabVisible) {
+                    return;
+                }
 
-            const OctoVersion = $("#footer_version span.version").text().match(/^\d\.\d/)[0]
-            if (OctoVersion == "1.5") {
-                self.control._enableWebcam = self._enableWebcam_1_5
-                $webcam = $("#control > #webcam_container, #control > #webcam_hls_container");
-            } else if (OctoVersion == "1.4") {
-                self.control._enableWebcam = self._enableWebcam_1_4
-                $webcam = $("#control > #webcam_container");
-            } else if (OctoVersion == "1.3") {
-                self.control._enableWebcam = self._enableWebcam_1_3
-                $webcam = $("#control > #webcam_container");
-            } else {
-                console.log("plugin_Webcam Tab: Unsupported OctoPrint version " + OctoVersion)
-                return // fail silently
-            }
-    
-            // onTabChange is identical in control.js v1.3.5, 1.4 & 1.5
-            self.control.onTabChange = function (current, previous) {
+                if (self.control.webcamDisableTimeout != undefined) {
+                    clearTimeout(self.control.webcamDisableTimeout);
+                }
+                var webcamImage = $("#webcam_image");
+                var currentSrc = webcamImage.attr("src");
+
+                // safari bug doesn't release the mjpeg stream, so we just set it up the once
+                if (OctoPrint.coreui.browser.safari && currentSrc != undefined) {
+                    return;
+                }
+
+                var newSrc = self.settings.webcam_streamUrl();
+                if (currentSrc != newSrc) {
+                    if (newSrc.lastIndexOf("?") > -1) {
+                        newSrc += "&";
+                    } else {
+                        newSrc += "?";
+                    }
+                    newSrc += new Date().getTime();
+
+                    self.control.webcamLoaded(false);
+                    self.control.webcamError(false);
+                    webcamImage.attr("src", newSrc);
+                }
+            },
+
+            _enableWebcam_v1_3: function() {
+                if (OctoPrint.coreui.selectedTab != "#tab_plugin_webcamtab" || !OctoPrint.coreui.browserTabVisible) {
+                    return;
+                }
+
+                if (self.control.webcamDisableTimeout != undefined) {
+                    clearTimeout(self.control.webcamDisableTimeout);
+                }
+                var webcamImage = $("#webcam_image");
+                var currentSrc = webcamImage.attr("src");
+
+                // safari bug doesn't release the mjpeg stream, so we just set it up the once
+                if (OctoPrint.coreui.browser.safari && currentSrc != undefined) {
+                    return;
+                }
+
+                var newSrc = self.control.settings.webcam_streamUrl();
+                if (currentSrc != newSrc) {
+                    if (newSrc.lastIndexOf("?") > -1) {
+                        newSrc += "&";
+                    } else {
+                        newSrc += "?";
+                    }
+                    newSrc += new Date().getTime();
+
+                    self.control.webcamLoaded(false);
+                    self.control.webcamError(false);
+                    webcamImage.attr("src", newSrc);
+                }
+            },
+            onTabChange_common: function (current, previous) {
                 if (current == "#tab_plugin_webcamtab") {
                     self.control._enableWebcam();     // inserted '.control'
                 } else if (previous == "#tab_plugin_webcamtab") {
                     self.control._disableWebcam();    // inserted '.control'
                 }
-            };
-
-            if ($webcam) {
-                var $hint = $webcam.next(); // same enough in control.js v1.3.5, 1.4 & 1.5
-                $tab.append($webcam.detach());
-                const checkString = "visible: keycontrolPossible"
-                if ($hint && $hint.attr("data-bind").substr(0, checkString.length) === checkString) {
-                    $tab.append($hint.detach());
-                }
             }
+        }
+
+        // move DOM webncam elements from #control to #tab_plugin_webcamtab ...
+        self.onAllBound = function(allViewModels) {
+            const $webcamTab = $("#tab_plugin_webcamtab")
+            var webcamElements = null
+            var hintDivEl = null
+            var _enableWebcamOverride = null
+            var onTabChangeOverride = null
+
+            const OctoVersion = $("#footer_version span.version").text().match(/^\d\.\d/)[0]
+
+            switch (OctoVersion) {
+            case "1.5":
+                _enableWebcamOvveride = self.methodOverrides['_enableWebcam_v1_5']
+                onTabChangeOverride = self.methodOverrides['onTabChange_common']
+                webcamElements = $("#control > #webcam_container, #control > #webcam_hls_container, #control > div:nth-child(3)")
+                hintDivEl = webcamElements[2]
+                break
+            
+            case "1.4":
+                _enableWebcamOvveride = self.methodOverrides['_enableWebcam_v1_4']
+                onTabChangeOverride = self.methodOverrides['onTabChange_common']
+                webcamElements = $("#control > #webcam_container, #control > div:nth-child(2)") // TODO: needs testing again
+                hintDivEl = webcamElements[1]
+                break
+
+            case "1.3":
+                _enableWebcamOvveride = self.methodOverrides['_enableWebcam_v1_3']
+                onTabChangeOverride = self.methodOverrides['onTabChange_common']
+                webcamElements = $("#control > #webcam_container, #control > div:nth-child(2)") // TODO: needs testing again
+                hintDivEl = webcamElements[1]
+                break
+
+            default:
+                console.log("plugin_Webcam Tab: Unsupported OctoPrint version " + OctoVersion)
+                return // fail silently
+                break
+            } // switch
+    
+            const hintDivCheck = "visible: keycontrolPossible" // TODO: needs double-checking for v1.4
+            let s = hintDivCheck
+            if (!$(hintDivEl) || !$(hintDivEl).attr("data-bind").substr(0, s.length) === s) {
+                console.log("plugin_Webcam Tab: Unsupported OctoPrint version " + OctoVersion + ". (\"Hint:\" text differs?)")
+                return // fail silently
+            }
+
+            $webcamTab.append($(webcamElements).detach());
+            self.control._enableWebcam = _enableWebcamOvveride
+            self.control.onTabChange = onTabChangeOverride
         };
 
     };
