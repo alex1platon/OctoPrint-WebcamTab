@@ -116,6 +116,7 @@ $(function() {
 
             switch (OctoVersion) {
             case "1.5":
+            case "1.6":
                 _enableWebcamOvveride = self.methodOverrides['_enableWebcam_v1_5']
                 onTabChangeOverride = self.methodOverrides['onTabChange_common']
                 webcamElements = $("#control > #webcam_container, #control > #webcam_hls_container, #control > div:nth-child(3)")
