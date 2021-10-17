@@ -131,7 +131,7 @@ $(function() {
                 break
 
             default:
-                if (OctoVersion > 1.7){
+                if (parseFloat(OctoVersion) > 1.7){
 		            console.log("plugin_Webcam Tab: Unsupported OctoPrint version " + OctoVersion)
                 }
 		        _enableWebcamOvveride = self.methodOverrides['_enableWebcam_v1_5']
