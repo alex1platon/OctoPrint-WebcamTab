@@ -115,14 +115,7 @@ $(function() {
             const OctoVersion = $("#footer_version span.version").text().match(/^\d\.\d/)[0]
 
             switch (OctoVersion) {
-            case "1.5":
-            case "1.6":
-                _enableWebcamOvveride = self.methodOverrides['_enableWebcam_v1_5']
-                onTabChangeOverride = self.methodOverrides['onTabChange_common']
-                webcamElements = $("#control > #webcam_container, #control > #webcam_hls_container, #control > div:nth-child(3)")
-                hintDivEl = webcamElements[2]
-                break
-            
+
             case "1.4":
                 _enableWebcamOvveride = self.methodOverrides['_enableWebcam_v1_4']
                 onTabChangeOverride = self.methodOverrides['onTabChange_common']
@@ -138,9 +131,15 @@ $(function() {
                 break
 
             default:
-                console.log("plugin_Webcam Tab: Unsupported OctoPrint version " + OctoVersion)
-                return // fail silently
+                if (parseFloat(OctoVersion) > 1.7){
+		            console.log("plugin_Webcam Tab: Unsupported OctoPrint version " + OctoVersion)
+                }
+		        _enableWebcamOvveride = self.methodOverrides['_enableWebcam_v1_5']
+                onTabChangeOverride = self.methodOverrides['onTabChange_common']
+                webcamElements = $("#control > #webcam_container, #control > #webcam_hls_container, #control > div:nth-child(3)")
+                hintDivEl = webcamElements[2]
                 break
+                    
             } // switch
     
             const hintDivCheck = "visible: keycontrolPossible" // TODO: needs double-checking for v1.4
