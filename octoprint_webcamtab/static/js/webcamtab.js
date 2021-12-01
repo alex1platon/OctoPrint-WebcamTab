@@ -11,7 +11,7 @@ $(function() {
         self.control = dependencies[0]; // reference to instance of default 'control' view model
         
         self.methodOverrides = {
-            _enableWebcam_v1_5: function() {
+            _enableWebcam_v1_5plus: function() {
                 if (
                     OctoPrint.coreui.selectedTab != "#tab_plugin_webcamtab" ||
                     !OctoPrint.coreui.browserTabVisible
@@ -134,7 +134,7 @@ $(function() {
                 if (parseFloat(OctoVersion) > 1.7){
 		            console.log("plugin_Webcam Tab: Unsupported OctoPrint version " + OctoVersion)
                 }
-		        _enableWebcamOvveride = self.methodOverrides['_enableWebcam_v1_5']
+		        _enableWebcamOvveride = self.methodOverrides['_enableWebcam_v1_5plus']
                 onTabChangeOverride = self.methodOverrides['onTabChange_common']
                 webcamElements = $("#control > #webcam_container, #control > #webcam_hls_container, #control > div:nth-child(3)")
                 hintDivEl = webcamElements[2]
