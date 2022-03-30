@@ -10,207 +10,40 @@ $(function() {
 
         self.control = dependencies[0]; // reference to instance of default 'control' view model
 
-        self.methodOverrides = {
+        $webcamTab = $("#tab_plugin_webcamtab")
 
-            _enableWebcam_v1_8plus: function() {
-                if (
-                    OctoPrint.coreui.selectedTab != "#tab_plugin_webcamtab" || // was '"#control"'
-                    !OctoPrint.coreui.browserTabVisible
-                ) {
-                    return;
-                }
-
-                if (self.webcamDisableTimeout != undefined) {
-                    clearTimeout(self.control.webcamDisableTimeout);    // inserted '.control'
-                }
-
-                // IF disabled then we dont need to do anything
-                if (self.settings.webcam_webcamEnabled() == false) {
-                    return;
-                }
-
-                // Determine stream type and switch to corresponding webcam.
-                var streamType = determineWebcamStreamType(self.settings.webcam_streamUrl());
-                if (streamType == "mjpg") {
-                    self.control._switchToMjpgWebcam();                 // inserted '.control'
-                } else if (streamType == "hls") {
-                    self.control._switchToHlsWebcam();                  // inserted '.control'
-                } else if (isWebRTCAvailable() && streamType == "webrtc") {
-                    self.control._switchToWebRTCWebcam();               // inserted '.control'
-                } else {
-                    throw "Unknown stream type " + streamType;
-                }
-            },
-
-            _enableWebcam_v1_7: function() {
-                if (
-                    OctoPrint.coreui.selectedTab != "#tab_plugin_webcamtab" ||
-                    !OctoPrint.coreui.browserTabVisible
-                ) {
-                    return;
-                }
-
-                if (self.control.webcamDisableTimeout != undefined) {
-                    clearTimeout(self.control.webcamDisableTimeout);  // inserted '.control'
-                }
-
-                // IF disabled then we dont need to do anything
-                if (self.settings.webcam_webcamEnabled() == false) {
-                    return;
-                }
-
-                // Determine stream type and switch to corresponding webcam.
-                var streamType = determineWebcamStreamType(self.control.settings.webcam_streamUrl());
-                if (streamType == "mjpg") {
-                    self.control._switchToMjpgWebcam()  // inserted '.control'
-                } else if (streamType == "hls") {
-                    self.control._switchToHlsWebcam()   // inserted '.control'
-                } else {
-                    throw "Unknown stream type " + streamType;
-                }
-            },
-
-            _enableWebcam_v1_5: function() {
-                if (
-                    OctoPrint.coreui.selectedTab != "#tab_plugin_webcamtab" ||
-                    !OctoPrint.coreui.browserTabVisible
-                ) {
-                    return;
-                }
-
-                if (self.control.webcamDisableTimeout != undefined) {
-                    clearTimeout(self.control.webcamDisableTimeout);  // inserted '.control'
-                }
-
-                // Determine stream type and switch to corresponding webcam.
-                var streamType = determineWebcamStreamType(self.control.settings.webcam_streamUrl());
-                if (streamType == "mjpg") {
-                    self.control._switchToMjpgWebcam()  // inserted '.control'
-                } else if (streamType == "hls") {
-                    self.control._switchToHlsWebcam()   // inserted '.control'
-                } else {
-                    throw "Unknown stream type " + streamType;
-                }
-            },
-
-            _enableWebcam_v1_4: function() {
-                if (OctoPrint.coreui.selectedTab != "#tab_plugin_webcamtab" || !OctoPrint.coreui.browserTabVisible) {
-                    return;
-                }
-
-                if (self.control.webcamDisableTimeout != undefined) {
-                    clearTimeout(self.control.webcamDisableTimeout);
-                }
-                var webcamImage = $("#webcam_image");
-                var currentSrc = webcamImage.attr("src");
-
-                // safari bug doesn't release the mjpeg stream, so we just set it up the once
-                if (OctoPrint.coreui.browser.safari && currentSrc != undefined) {
-                    return;
-                }
-
-                var newSrc = self.settings.webcam_streamUrl();
-                if (currentSrc != newSrc) {
-                    if (newSrc.lastIndexOf("?") > -1) {
-                        newSrc += "&";
-                    } else {
-                        newSrc += "?";
-                    }
-                    newSrc += new Date().getTime();
-
-                    self.control.webcamLoaded(false);
-                    self.control.webcamError(false);
-                    webcamImage.attr("src", newSrc);
-                }
-            },
-
-            _enableWebcam_v1_3: function() {
-                if (OctoPrint.coreui.selectedTab != "#tab_plugin_webcamtab" || !OctoPrint.coreui.browserTabVisible) {
-                    return;
-                }
-
-                if (self.control.webcamDisableTimeout != undefined) {
-                    clearTimeout(self.control.webcamDisableTimeout);
-                }
-                var webcamImage = $("#webcam_image");
-                var currentSrc = webcamImage.attr("src");
-
-                // safari bug doesn't release the mjpeg stream, so we just set it up the once
-                if (OctoPrint.coreui.browser.safari && currentSrc != undefined) {
-                    return;
-                }
-
-                var newSrc = self.control.settings.webcam_streamUrl();
-                if (currentSrc != newSrc) {
-                    if (newSrc.lastIndexOf("?") > -1) {
-                        newSrc += "&";
-                    } else {
-                        newSrc += "?";
-                    }
-                    newSrc += new Date().getTime();
-
-                    self.control.webcamLoaded(false);
-                    self.control.webcamError(false);
-                    webcamImage.attr("src", newSrc);
-                }
-            }
-        }
-
-        // move DOM webcam elements from #control to #tab_plugin_webcamtab ...
+        // move webcam related elements from #control to #tab_plugin_webcamtab ...
         self.onAllBound = function(allViewModels) {
-            const $webcamTab = $("#tab_plugin_webcamtab")
-            var webcamElements = null
-            var _enableWebcamOverride = null
 
-            const OctoVersion = $("#footer_version span.version").text().match(/^\d\.\d/)[0]
+            console.log("Plugin webcamtab detected OctoPrint v" + window.VERSION)
 
-            switch (OctoVersion) {
-
-                case "1.8":
-                    _enableWebcamOverride = self.methodOverrides['_enableWebcam_v1_8plus']
-                    break
-
-                case "1.7":
-                    _enableWebcamOverride = self.methodOverrides['_enableWebcam_v1_7']
-                    break
-
-                case "1.6":
-                case "1.5":
-                    _enableWebcamOverride = self.methodOverrides['_enableWebcam_v1_5']
-                    break
-
-                case "1.4":
-                    _enableWebcamOverride = self.methodOverrides['_enableWebcam_v1_4']
-                    break
-
-                case "1.3":
-                    _enableWebcamOverride = self.methodOverrides['_enableWebcam_v1_3']
-                    break
-
-                default:
-                    console.log("plugin_Webcam_Tab: Unsupported OctoPrint version " + OctoVersion)
-                    break
-
-            } // switch
-
+            // move webcam elements from #control to #tab_plugin_webcamtab
             $webcamElements = $(
-                "#control > #webcam_container"
-                +",#control > #webcam_hls_container, #control > #webcam_container + div"  // introduced in OctoPrint v1.5
-                +",#control > #webcam_webrtc_container"                                   // introduced in OctoPrint v1.8
+                 "#control > #webcam_video_container"   // introduced in OctoPrint v1.8
+                +",#control > #webcam_container"        // since at least OctoPrint v1.3
+                +",#control > #webcam_hls_container"    // introduced in OctoPrint v1.5
+                +",#control > #webcam_container + div"  // 'Hint:' text; introduced in OctoPrint v1.5
             )
-            onTabChangeOverride = function (current, previous) {
-                if (current == "#tab_plugin_webcamtab") {
-                    self.control._enableWebcam();     // inserted '.control'
-                } else if (previous == "#tab_plugin_webcamtab") {
-                    self.control._disableWebcam();    // inserted '.control'
+            $webcamTab.append($webcamElements.detach())
+
+            // modify behaviour of control.js functions to work with relocated webcam elements
+            self._onTabChange = self.control.onTabChange.bind(control)
+            self.control.onTabChange = function (current, previous) {
+                if (previous == "#tab_plugin_webcamtab") {
+                    self.control._disableWebcam()
+                } else {
+                    self._onTabChange((current == "#tab_plugin_webcamtab") ? "#control" : current, previous)
                 }
             }
 
-            $webcamTab.append($webcamElements.detach());
-            self.control._enableWebcam = _enableWebcamOverride
-            self.control.onTabChange = onTabChangeOverride
+            self._enableWebcam = self.control._enableWebcam.bind(control)
+            self.control._enableWebcam = function() {
+                const storeSelectedTab = OctoPrint.coreui.selectedTab 
+                if (OctoPrint.coreui.selectedTab == "#tab_plugin_webcamtab") OctoPrint.coreui.selectedTab = "#control"
+                self._enableWebcam()
+                OctoPrint.coreui.selectedTab = storeSelectedTab
+            }
         }
-
     }
 
     OCTOPRINT_VIEWMODELS.push({
