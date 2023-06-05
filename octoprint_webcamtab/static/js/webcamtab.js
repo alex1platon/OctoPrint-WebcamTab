@@ -19,7 +19,8 @@ $(function() {
 
             // move webcam elements from #control to #tab_plugin_webcamtab
             $webcamElements = $(
-                 "#control > #webcam_video_container"   // introduced in OctoPrint v1.8
+                "#control > #webcam_plugins_container"  // since OctoPrint v1.9
+                +",#control > #webcam_video_container"  // introduced in OctoPrint v1.8
                 +",#control > #webcam_container"        // since at least OctoPrint v1.3
                 +",#control > #webcam_hls_container"    // introduced in OctoPrint v1.5
                 +",#control > #webcam_container + div"  // 'Hint:' text; introduced in OctoPrint v1.5
